@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKR Matrix Enterprise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  /* Nova Paleta Vibrante e Tecnológica */
+  --bg-app: #F4F7FA;
+  --bg-panel: #FFFFFF;
+  --brand-primary: #0062FF; /* Azul Elétrico */
+  --brand-primary-light: #E6F0FF;
+  --text-main: #1A1F36;
+  --text-secondary: #697386;
+  --border-color: #E3E8EE;
+  
+  /* Cores de Status Vivas */
+  --color-high: #00D1A4;   /* Teal Neon */
+  --bg-high: #DFFFF8;
+  --color-mid: #FF9F1C;    /* Laranja Vibrante */
+  --bg-mid: #FFF3E0;
+  --color-low: #FF3B30;    /* Vermelho Intenso */
+  --bg-low: #FFEBEA;
+
+  --shadow-sm: 0 2px 5px rgba(0,0,0,0.03);
+  --shadow-md: 0 10px 20px rgba(26,31,54,0.05);
+  --shadow-lg: 0 15px 35px rgba(26,31,54,0.08);
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --transition: all 0.25s ease-in-out;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;outline:none;}
+body{font-family:'Inter',sans-serif;background-color:var(--bg-app);color:var(--text-main);-webkit-font-smoothing:antialiased;}
+
+.app{padding:2rem;}
+
+/* Top Bar Moderna com efeito Glass */
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:2rem;padding:1rem 1.5rem;flex-wrap:wrap;gap:15px;
+  background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);
+  border-radius:var(--radius-md);box-shadow:var(--shadow-md);
+  position:sticky;top:1rem;z-index:100;
+}
+.top-bar h1{font-size:20px;font-weight:700;color:var(--brand-primary);display:flex;align-items:center;gap:10px;}
+.top-bar h1 i{font-size:24px;}
+
+.tabs{display:flex;gap:6px;background:#F0F2F5;padding:6px;border-radius:99px;}
+.tab{
+  padding:8px 18px;font-size:13px;font-weight:600;border-radius:99px;cursor:pointer;
+  border:none;background:transparent;color:var(--text-secondary);transition:var(--transition);
+}
+.tab:hover{color:var(--brand-primary);}
+.tab.active{background:var(--brand-primary);color:#FFFFFF;box-shadow:0 4px 10px rgba(0,98,255,0.25);}
+
+.section{display:none;animation:fadeIn 0.4s ease-out;}.section.visible{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* Quarter Selector Tecnológico */
+.q-row{
+  display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;
+  background:var(--bg-panel);padding:10px;border-radius:var(--radius-md);box-shadow:var(--shadow-sm);
+}
+.q-btn{
+  padding:6px 16px;font-size:12px;font-weight:600;border-radius:99px;cursor:pointer;
+  border:1px solid var(--border-color);background:#FFFFFF;color:var(--text-secondary);transition:var(--transition);
+}
+.q-btn:hover{border-color:var(--brand-primary);color:var(--brand-primary);background:var(--brand-primary-light);}
+.q-btn.active{background:var(--brand-primary);color:#FFFFFF;border-color:var(--brand-primary);box-shadow:0 4px 10px rgba(0,98,255,0.15);}
+
+/* Cards de OKR Modernos */
+.okr-card{
+  background:var(--bg-panel);border-radius:var(--radius-md);margin-bottom:1.5rem;
+  overflow:hidden;box-shadow:var(--shadow-md);transition:var(--transition);border:1px solid transparent;
+}
+.okr-card:hover{box-shadow:var(--shadow-lg);border-color:var(--brand-primary-light);}
+
+.okr-header{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--border-color);gap:15px;background:#FAFBFC;}
+.okr-objective{font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:4px;letter-spacing:-0.01em;}
+.okr-meta{font-size:12px;color:var(--text-secondary);display:flex;gap:12px;align-items:center;}
+.okr-score{font-size:24px;font-weight:700;letter-spacing:-0.02em;}
+
+/* Cores de Score Vivas */
+.score-high{color:var(--color-high);}.score-mid{color:var(--color-mid);}.score-low{color:var(--color-low);}
+
+/* Barras de Progresso "Gordinhas" e Brilhantes */
+.prog-outer{height:8px;background:#E9ECEF;border-radius:99px;overflow:hidden;position:relative;}
+.prog-inner{
+  height:100%;border-radius:99px;transition:width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position:absolute;left:0;top:0;
+}
+.c-high{background:linear-gradient(90deg, #00D1A4, #00F2FE);box-shadow:0 0 10px rgba(0,209,164,0.3);}
+.c-mid{background:linear-gradient(90deg, #FF9F1C, #FBB03B);}
+.c-low{background:linear-gradient(90deg, #FF3B30, #FF746C);}
+
+/* Tabela de KR Clean */
+.kr-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+.kr-table th{
+  text-align:left;padding:12px 24px;font-size:11px;font-weight:700;color:var(--text-secondary);
+  text-transform:uppercase;letter-spacing:0.05em;background:#FAFBFB;border-bottom:1px solid var(--border-color);
+}
+.kr-table td{padding:16px 24px;border-bottom:1px solid var(--border-color);color:var(--text-main);vertical-align:middle;transition:var(--transition);}
+.kr-table tr:last-child td{border-bottom:none;}
+.kr-table tr:hover td{background:var(--brand-primary-light);}
+
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:0.03em;}
+.bg-green{background:var(--bg-high);color:var(--color-high);}.bg-amber{background:var(--bg-mid);color:var(--color-mid);}.bg-red{background:var(--bg-low);color:var(--color-low);}.bg-blue{background:var(--brand-primary-light);color:var(--brand-primary);}
+
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--text-secondary);font-size:14px;background:var(--bg-panel);border-radius:var(--radius-md);box-shadow:var(--shadow-sm);}
+.empty-state i{font-size:40px;color:var(--border-color);margin-bottom:15px;display:block;}
+
+/* Formulários e Botões Modernos */
+.form-section{background:var(--bg-panel);border-radius:var(--radius-md);padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--shadow-md);}
+.form-title{font-size:15px;font-weight:600;color:var(--text-main);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;}
+.form-row.full{grid-template-columns:1fr;}
+
+label{font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;text-transform:uppercase;}
+input,select,textarea{
+  font-family:'Inter',sans-serif;font-size:14px;padding:10px 15px;border-radius:var(--radius-sm);
+  border:1px solid var(--border-color);width:100%;transition:var(--transition);background:#FFFFFF;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--brand-primary);box-shadow:0 0 0 3px var(--brand-primary-light);}
+textarea{resize:vertical;min-height:60px;}
+
+.btn-primary{
+  background:var(--brand-primary);color:#FFFFFF;border:none;padding:10px 20px;
+  border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;transition:var(--transition);box-shadow:0 4px 10px rgba(0,98,255,0.2);
+}
+.btn-primary:hover{background:#0052D9;transform:translateY(-1px);box-shadow:0 6px 15px rgba(0,98,255,0.3);}
+
+.btn-ghost{
+  background:transparent;color:var(--brand-primary);border:1px solid var(--brand-primary);
+  padding:9px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:var(--transition);
+}
+.btn-ghost:hover{background:var(--brand-primary-light);transform:translateY(-1px);}
+
+.btn-danger{
+  background:#FFFFFF;color:var(--color-low);border:1px solid var(--color-low);
+  padding:6px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:var(--transition);
+}
+.btn-danger:hover{background:var(--bg-low);transform:translateY(-1px);}
+
+.btn-sm{
+  padding:6px 12px;font-size:12px;font-weight:600;border-radius:var(--radius-sm);cursor:pointer;
+  border:1px solid var(--border-color);background:#FFFFFF;color:var(--text-secondary);transition:var(--transition);
+}
+.btn-sm:hover{border-color:var(--text-secondary);color:var(--text-main);background:#F8F9FA;}
+
+/* Dash Cards */
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-bottom:2rem;}
+.metric-card{background:var(--bg-panel);border-radius:var(--radius-md);padding:1.25rem;box-shadow:var(--shadow-md);border-left:4px solid transparent;}
+.metric-card:nth-child(1){border-left-color:var(--brand-primary);}
+.metric-card:nth-child(2){border-left-color:var(--color-mid);}
+.metric-label{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;}
+.metric-value{font-size:28px;font-weight:700;color:var(--text-main);letter-spacing:-0.02em;}
+.metric-sub{font-size:11px;color:var(--text-secondary);margin-top:2px;}
+
+.chart-wrap{position:relative;width:100%;margin-top:10px;}
+.divider{border:none;border-top:1px solid var(--border-color);margin:1.25rem 0;}
+
+/* Avatares e Comentários */
+.avatar{
+  width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;
+  justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;text-transform:uppercase;
+  color:#FFFFFF;box-shadow:var(--shadow-sm);
+}
+.av-blue{background:#3B82F6;}.av-teal{background:#10B981;}.av-amber{background:#F59E0B;}.av-purple{background:#8B5CF6;}.av-coral{background:#EC4899;}
+
+.user-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 6px;
+  border-radius:99px;background:#F0F2F5;font-size:13px;font-weight:500;
+  color:var(--text-main);border:1px solid transparent;
+}
+.user-pill .avatar{width:24px;height:24px;font-size:10px;}
+
+.comment-block{background:#F8F9FA;border-radius:var(--radius-sm);padding:12px;margin-top:8px;border:1px solid var(--border-color);}
+.comment-author{font-size:11px;font-weight:600;color:var(--text-main);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.comment-text{font-size:13px;color:var(--text-main);line-height:1.6;}
+.comment-time{font-size:11px;color:var(--text-secondary);font-weight:400;}
+
+/* Update Row */
+.kr-update-row{padding:1.5rem 0;border-bottom:1px solid var(--border-color);}
+.kr-update-row:last-child{border-bottom:none;}
+.val-row{display:flex;align-items:center;gap:10px;margin:10px 0;}
+.val-input{width:100px;font-size:14px;font-weight:600;text-align:right;}
+.val-unit{font-size:13px;color:var(--text-secondary);font-weight:500;}
+
+/* Login Screen Tecnológica */
+#login-wrap{
+  background:radial-gradient(circle at top right, var(--brand-primary-light) 0%, var(--bg-app) 60%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+}
+.login-screen{max-width:400px;width:100%;padding:20px;}
+.login-card{background:var(--bg-panel);border-radius:var(--radius-md);padding:2rem;box-shadow:var(--shadow-lg);}
+.login-header i{font-size:40px;color:var(--brand-primary);display:block;margin-bottom:10px;}
+.login-title{font-size:22px;font-weight:700;letter-spacing:-0.02em;color:var(--text-main);}
+.login-subtitle{font-size:14px;color:var(--text-secondary);margin-top:5px;margin-bottom:2rem;}
+
+.user-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
+.user-card{
+  background:#FFFFFF;border:1px solid var(--border-color);border-radius:var(--radius-md);
+  padding:1.25rem;display:flex;flex-direction:column;align-items:center;gap:10px;
+  cursor:pointer;transition:var(--transition);text-align:center;
+}
+.user-card:hover{border-color:var(--brand-primary);background:var(--brand-primary-light);transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.user-card .avatar{width:48px;height:48px;font-size:16px;}
+.user-card-name{font-size:13px;font-weight:600;color:var(--text-main);}
+.user-card-role{font-size:11px;color:var(--text-secondary);}
+
+/* Notificação Toast */
+.notif{
+  background:var(--text-main);color:#FFFFFF;padding:12px 20px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:500;opacity:0;transition:var(--transition);pointer-events:none;
+  position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:8px;
+  box-shadow:var(--shadow-lg);transform:translateY(20px);
+}
+.notif.show{opacity:1;transform:translateY(0);}
+
+.week-nav{display:flex;align-items:center;gap:8px;background:#F0F2F5;padding:4px;border-radius:99px;}
+.week-nav span{font-size:13px;font-weight:700;color:var(--brand-primary);min-width:40px;text-align:center;}
+.week-nav .btn-sm{border-radius:99px;padding:5px 10px;border:none;background:transparent;}
+.week-nav .btn-sm:hover{background:#FFFFFF;color:var(--brand-primary);}
+
+.user-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+
+/* Tela de Loading Sincronizado */
+#loading-screen{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;background:var(--bg-app);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10000;
+  font-weight:600;color:var(--text-secondary);gap:15px;
+}
+.spinner{
+  width:40px;height:40px;border:4px solid var(--border-color);border-top-color:var(--brand-primary);
+  border-radius:50%;animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div>Sincronizando OKR Matrix Cloud...</div>
+</div>
+
+<div id="login-wrap" style="display:none;">
+  <div class="login-screen">
+    <div class="login-header" style="text-align:center;">
+      <i class="ti ti-target-arrow"></i>
+      <div class="login-title">OKR Matrix Cloud</div>
+      <div class="login-subtitle">Acesse seu painel de performance compartilhado</div>
+    </div>
+    <div class="login-card">
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">Selecione seu perfil</div>
+      <div class="user-grid" id="userGrid"></div>
+      <div class="divider"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Ou crie um novo</div>
+      <div class="form-row">
+        <div><label>Nome</label><input id="new-uname" type="text" placeholder="Ex: Ana Silva"></div>
+        <div><label>Área</label><input id="new-urole" type="text" placeholder="Ex: Produto"></div>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center;margin-top:5px;" onclick="createUser()"><i class="ti ti-user-plus"></i> Criar e Entrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="app-wrap" style="display:none;" class="app">
+  <div class="top-bar">
+    <h1><i class="ti ti-target-arrow"></i> OKR Matrix</h1>
+    <div class="user-bar">
+      <div id="currentUserBadge"></div>
+      <div class="tabs" role="tablist">
+        <button class="tab active" onclick="switchTab('dashboard')" role="tab"><i class="ti ti-layout-dashboard" style="margin-right:4px;"></i>Painel</button>
+        <button class="tab" onclick="switchTab('update')" role="tab"><i class="ti ti-refresh" style="margin-right:4px;"></i>Atualizar</button>
+        <button class="tab" onclick="switchTab('manage')" role="tab"><i class="ti ti-settings" style="margin-right:4px;"></i>Gerenciar</button>
+        <button class="tab" onclick="switchTab('users')" role="tab"><i class="ti ti-users" style="margin-right:4px;"></i>Usuários</button>
+      </div>
+      <button class="btn-sm" onclick="logout()" title="Sair" style="border-radius:99px;padding:8px;color:var(--color-low); border-color:var(--bg-low);"><i class="ti ti-logout" style="font-size:16px;"></i></button>
+    </div>
+  </div>
+  
+  <div class="q-row">
+    <div id="quarterSelector" style="display:flex;gap:6px;"></div>
+    <div class="week-nav" style="margin-left:auto;">
+        <button class="btn-sm" onclick="chWeek(-1)"><i class="ti ti-chevron-left"></i></button>
+        <span id="weekLabel">S-</span>
+        <button class="btn-sm" onclick="chWeek(1)"><i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+
+  <div id="section-dashboard" class="section visible"></div>
+  <div id="section-update" class="section"></div>
+  <div id="section-manage" class="section"></div>
+  <div id="section-users" class="section"></div>
+</div>
+
+<div class="notif" id="notif"><i class="ti ti-check" id="notif-icon"></i> <span id="notif-msg"></span></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SK = 'okr_v3_modern_cloud';
+const AV_COLORS = ['av-blue','av-teal','av-amber','av-purple','av-coral'];
+
+// !!! COLE A SUA URL DO GOOGLE APPS SCRIPT AQUI ABAIXO !!!
+const WEB_APP_URL = 'https://script.google.com/a/macros/multimarcasconsorcios.com.br/s/AKfycbwQ2rDwuE2NJHGCkEqBmwLtI7kAVUPdPaTl_FNvvX03N6s4S71GBtOh50WIrji4hTXZjA/exec';
+
+function defaultData(){
+  return {
+    users:[
+      {id:'u1',name:'Ana Lima',role:'Produto',color:'av-teal'},
+      {id:'u2',name:'Carlos Melo',role:'Comercial',color:'av-blue'},
+      {id:'u3',name:'Beatriz Costa',role:'CS',color:'av-purple'}
+    ],
+    currentUserId:null,
+    quarters:['2025-Q4','2026-Q1','2026-Q2','2026-Q3'],
+    activeQuarter:'2026-Q2',
+    currentWeek:3,
+    okrs:[
+      {id:'okr1',quarter:'2026-Q2',objective:'Expandir base de clientes B2B Premium',owner:'Comercial',
+       krs:[
+         {id:'kr1',name:'Novos contratos assinados (Enterprise)',target:25,unit:'contratos',weekly:{1:3,2:5,3:8},comments:{}},
+         {id:'kr2',name:'MRR de novos clientes (R$k)',target:200,unit:'R$k',weekly:{1:20,2:45,3:70},comments:{3:[{userId:'u2',text:'Fechamos 2 contratos enterprise na semana. Pipeline aquecido.',ts:'Seg 13/01'}]}},
+         {id:'kr3',name:'Taxa de conversão demo -> trial',target:35,unit:'%',weekly:{1:18,2:22,3:25},comments:{}}
+       ]},
+      {id:'okr2',quarter:'2026-Q2',objective:'Elevar satisfação e retenção (NPS)',owner:'Customer Success',
+       krs:[
+         {id:'kr4',name:'NPS médio mensal',target:75,unit:'pts',weekly:{1:52,2:58,3:65},comments:{2:[{userId:'u3',text:'NPS subiu após melhorias no onboarding.',ts:'Ter 14/01'}]}},
+         {id:'kr5',name:'Churn rate trimestral (SMB)',target:1.2,unit:'%',weekly:{1:2.8,2:2.1,3:1.8},comments:{}}
+       ]}
+    ]
+  };
+}
+
+let state={};
+let activeTab='dashboard';
+let chartInst={};
+
+// Função Assíncrona para Carregar dados da Nuvem
+async function loadData(){
+  if (!WEB_APP_URL || WEB_APP_URL.includes('SUA_URL_DO_GOOGLE_APPS_SCRIPT_AQUI')) {
+    try{const r=localStorage.getItem(SK);if(r)return JSON.parse(r);}catch(e){}
+    return defaultData();
+  }
+  try {
+    const response = await fetch(WEB_APP_URL);
+    const data = await response.json();
+    if (data && data.error === "empty") return defaultData();
+    return data;
+  } catch (e) {
+    console.error("Erro ao carregar dados do Google Sheets:", e);
+    try{const r=localStorage.getItem(SK);if(r)return JSON.parse(r);}catch(err){}
+    return defaultData();
+  }
+}
+
+// Função Assíncrona para Gravar dados na Nuvem (Otimista)
+async function save(){
+  try{localStorage.setItem(SK,JSON.stringify(state));}catch(e){}
+  if (!WEB_APP_URL || WEB_APP_URL.includes('SUA_URL_DO_GOOGLE_APPS_SCRIPT_AQUI')) return;
+  try {
+    await fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify(state),
+      headers: { 'Content-Type': 'text/plain' } // Impede erro de CORS no Apps Script
+    });
+  } catch (e) {
+    console.error("Erro ao sincronizar na nuvem:", e);
+    notify('Erro de ligação com a nuvem', true);
+  }
+}
+
+function notify(msg,isErr=false){
+  const el=document.getElementById('notif');
+  const icon=document.getElementById('notif-icon');
+  document.getElementById('notif-msg').textContent=msg;
+  el.style.background=isErr?'#FF3B30':'#1A1F36';
+  icon.className = isErr ? 'ti ti-alert-triangle' : 'ti ti-check';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2600);
+}
+
+function initials(name){return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+function getUser(id){return state.users.find(u=>u.id===id);}
+function currentUser(){return getUser(state.currentUserId);}
+
+function login(userId){
+  state.currentUserId=userId;
+  save();
+  document.getElementById('login-wrap').style.display='none';
+  document.getElementById('app-wrap').style.display='block';
+  renderCurrentUserBadge();
+  renderQuarterSelector();
+  renderSection();
+}
+function logout(){
+  state.currentUserId=null;
+  save();
+  document.getElementById('app-wrap').style.display='none';
+  document.getElementById('login-wrap').style.display='flex';
+  renderLoginUsers();
+}
+function createUser(){
+  const name=document.getElementById('new-uname').value.trim();
+  const role=document.getElementById('new-urole').value.trim();
+  if(!name){notify('Informe um nome',true);return;}
+  const id='u_'+Date.now();
+  const color=AV_COLORS[state.users.length%AV_COLORS.length];
+  state.users.push({id,name,role:role||'—',color});
+  save();
+  login(id);
+}
+function renderLoginUsers(){
+  const el=document.getElementById('userGrid');
+  el.innerHTML=state.users.map(u=>`
+    <div class="user-card" onclick="login('${u.id}')">
+      <div class="avatar ${u.color}">${initials(u.name)}</div>
+      <div class="user-card-name">${u.name}</div>
+      <div class="user-card-role">${u.role}</div>
+    </div>`).join('');
+}
+function renderCurrentUserBadge(){
+  const u=currentUser();if(!u)return;
+  document.getElementById('currentUserBadge').innerHTML=`
+    <div class="user-pill">
+      <div class="avatar ${u.color}">${initials(u.name)}</div>
+      <span>${u.name}</span>
+    </div>`;
+}
+function switchTab(tab){
+  activeTab=tab;
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active',['dashboard','update','manage','users'][i]===tab);
+  });
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('visible'));
+  document.getElementById('section-'+tab).classList.add('visible');
+  renderSection();
+}
+function renderQuarterSelector(){
+  const el=document.getElementById('quarterSelector');
+  el.innerHTML=state.quarters.map(q=>`<button class="q-btn${q===state.activeQuarter?' active':''}" onclick="setQ('${q}')">${q}</button>`).join('');
+  document.getElementById('weekLabel').textContent='S'+state.currentWeek;
+}
+function setQ(q){state.activeQuarter=q;save();renderQuarterSelector();renderSection();}
+function chWeek(d){
+  state.currentWeek=Math.max(1,Math.min(13,state.currentWeek+d));
+  save();
+  document.getElementById('weekLabel').textContent='S'+state.currentWeek;
+  renderSection();
+}
+function renderSection(){
+  if(activeTab==='dashboard')renderDashboard();
+  else if(activeTab==='update')renderUpdate();
+  else if(activeTab==='manage')renderManage();
+  else renderUsers();
+}
+function getOKRs(){return state.okrs.filter(o=>o.quarter===state.activeQuarter);}
+function krVal(kr,w){
+  const wks=Object.keys(kr.weekly).map(Number).sort((a,b)=>a-b).filter(x=>x<=w);
+  return wks.length?kr.weekly[wks[wks.length-1]]:0;
+}
+function krPct(kr,w){
+  const v=krVal(kr,w);
+  if(kr.target===0)return 0;
+  if(kr.unit==='%'&&kr.name.toLowerCase().includes('churn')){
+    if(v <= kr.target) return 100;
+    return Math.min(100,Math.max(0,Math.round((kr.target / v)*100)));
+  }
+  return Math.min(100,Math.round((v/kr.target)*100));
+}
+function okrScore(okr,w){
+  if(!okr.krs.length)return 0;
+  return Math.round(okr.krs.reduce((s,kr)=>s+krPct(kr,w),0)/okr.krs.length);
+}
+function scCls(s){return s>=70?'score-high':s>=40?'score-mid':'score-low';}
+function prCls(s){return s>=70?'c-high':s>=40?'c-mid':'c-low';}
+function badgeCls(s){return s>=70?'bg-green':s>=40?'bg-amber':'bg-red';}
+function statusLbl(s){return s>=70?'No Prazo':s>=40?'Em Risco':'Atrasado';}
+
+function renderDashboard(){
+  const el=document.getElementById('section-dashboard');
+  const okrs=getOKRs();const w=state.currentWeek;
+  if(!okrs.length){el.innerHTML=`<div class="empty-state"><i class="ti ti-target" style="font-size:32px;"></i>Nenhum OKR definido para ${state.activeQuarter}.<br>Vá em Gerenciar para criar.</div>`;return;}
+  const scores=okrs.map(o=>okrScore(o,w));
+  const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;
+  const totalKRs=okrs.reduce((s,o)=>s+o.krs.length,0);
+  const onTrack=scores.filter(s=>s>=70).length;
+
+  let html=`<div class="metric-row">
+    <div class="metric-card"><div class="metric-label">Score Médio Qtd.</div><div class="metric-value ${scCls(avg)}">${avg}%</div><div class="metric-sub">${statusLbl(avg)}</div></div>
+    <div class="metric-card"><div class="metric-label">Objetivos</div><div class="metric-value">${okrs.length}</div><div class="metric-sub">${state.activeQuarter}</div></div>
+    <div class="metric-card"><div class="metric-label">Key Results</div><div class="metric-value">${totalKRs}</div><div class="metric-sub">cadastrados</div></div>
+    <div class="metric-card"><div class="metric-label">No Prazo</div><div class="metric-value score-high">${onTrack}</div><div class="metric-sub">de ${okrs.length} OKRs</div></div>
+  </div>`;
+
+  okrs.forEach((okr,idx)=>{
+    const sc=scores[idx];
+    html+=`<div class="okr-card">
+      <div class="okr-header">
+        <div style="flex:1;min-width:0;">
+          <div class="okr-objective">${okr.objective}</div>
+          <div class="okr-meta"><span><i class="ti ti-briefcase" style="margin-right:3px;"></i>${okr.owner}</span> <span><i class="ti ti-list-check" style="margin-right:3px;"></i>${okr.krs.length} KRs</span> <span>semana ${w}</span></div>
+        </div>
+        <div style="text-align:right;min-width:100px;">
+          <div class="okr-score ${scCls(sc)}">${sc}%</div>
+          <span class="badge ${badgeCls(sc)}">${statusLbl(sc)}</span>
+        </div>
+      </div>
+      <div style="padding:15px 24px;">
+        <div class="prog-outer"><div class="prog-inner ${prCls(sc)}" style="width:${sc}%"></div></div>
+      </div>
+      <table class="kr-table" aria-label="KRs de ${okr.objective}">
+        <thead><tr><th style="width:40%">Key Result</th><th style="width:15%">Atual</th><th style="width:15%">Meta</th><th style="width:20%">Progresso</th><th style="width:10%">%</th></tr></thead>
+        <tbody>${okr.krs.map(kr=>{
+          const pct=krPct(kr,w);const val=krVal(kr,w);
+          const cmts=Object.values(kr.comments||{}).flat().length;
+          return `<tr>
+            <td><div style="font-weight:600;color:var(--text-main);">${kr.name}</div>${cmts>0?`<span class="badge bg-blue" style="margin-top:5px; padding: 2px 6px; font-size:9px;"><i class="ti ti-message" style="margin-right:3px;"></i>${cmts}</span>`:''}</td>
+            <td style="font-weight:600; font-size:14px;">${val} <span style="font-weight:400; font-size:12px; color:var(--text-secondary);">${kr.unit}</span></td>
+            <td style="color:var(--text-secondary);">${kr.target} ${kr.unit}</td>
+            <td><div class="prog-outer" style="height:6px;"><div class="prog-inner ${prCls(pct)}" style="width:${pct}%"></div></div></td>
+            <td style="font-weight:700; font-size:14px;" class="${scCls(pct)}">${pct}%</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+  });
+
+  html+=`<div class="form-section">
+    <div class="form-title"><i class="ti ti-chart-line" style="color:var(--brand-primary);"></i> Evolução do Score Médio</div>
+    <div class="chart-wrap" style="height:220px;"><canvas id="evoChart"></canvas></div>
+  </div>`;
+
+  el.innerHTML=html;
+  setTimeout(()=>renderEvoChart(okrs,w),60);
+}
+
+function renderEvoChart(okrs,cw){
+  const canvas=document.getElementById('evoChart');if(!canvas)return;
+  if(chartInst.evo){chartInst.evo.destroy();}
+  const weeks=Array.from({length:cw},(_,i)=>i+1);
+  const scores=weeks.map(w=>{
+    const s=okrs.map(o=>okrScore(o,w));
+    return s.length?Math.round(s.reduce((a,b)=>a+b,0)/s.length):0;
+  });
+  chartInst.evo=new Chart(canvas,{
+    type:'line',
+    data:{
+      labels:weeks.map(w=>`S${w}`),
+      datasets:[{
+        label:'Score Médio',data:scores,
+        borderColor:'#0062FF',background: 'transparent',
+        borderWidth:3,pointBackgroundColor:'#FFFFFF',pointBorderColor:'#0062FF',pointBorderWidth:2,pointRadius:4,pointHoverRadius:6,
+        fill:true,backgroundColor: 'rgba(0,98,255,0.05)',tension:0.4
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{padding:10,cornerRadius:8,bodyFont:{family:'Inter'}}},
+      scales:{
+        y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:10,family:'Inter'}},grid:{color:'#EAECEF'}},
+        x:{ticks:{font:{size:10,family:'Inter'}},grid:{display:false}}
+      }
+    }
+  });
+}
+
+function renderUpdate(){
+  const el=document.getElementById('section-update');
+  const okrs=getOKRs();const w=state.currentWeek;const cu=currentUser();
+  if(!okrs.length){el.innerHTML=`<div class="empty-state">Nenhum OKR encontrado. Vá em Gerenciar.</div>`;return;}
+  let html=`<div style="background:var(--bg-panel); padding:15px; border-radius:var(--radius-md); box-shadow:var(--shadow-sm); margin-bottom:1.5rem; font-size:14px; color:var(--text-secondary); display:flex; align-items:center; gap:10px;">
+    <i class="ti ti-info-circle" style="color:var(--brand-primary); font-size:18px;"></i>
+    <span>Atualizando como <strong style="color:var(--text-main);">${cu?cu.name:'—'}</strong> para a <strong style="color:var(--brand-primary);">Semana ${w}</strong> do trimestre.</span>
+  </div>`;
+  okrs.forEach(okr=>{
+    html+=`<div class="okr-card" style="padding:0;">
+      <div class="okr-header"><div><div class="okr-objective">${okr.objective}</div><div class="okr-meta">${okr.owner}</div></div></div>
+      <div style="padding:0 24px 20px;">
+        ${okr.krs.map(kr=>{
+          const val=kr.weekly[w]??'';
+          const cmts=(kr.comments[w]||[]);
+          const pct=krPct(kr,w);
+          return `<div class="kr-update-row">
+            <div style="display:flex; justify-content:space-between; align-items:start; gap:15px; margin-bottom:12px;">
+                <div>
+                  <div style="font-size:14px;font-weight:600;color:var(--text-main);margin-bottom:2px;">${kr.name}</div>
+                  <div style="font-size:12px;color:var(--text-secondary);">Meta: ${kr.target} ${kr.unit}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="val-row" style="margin:0;">
+                    <input class="val-input" type="number" step="any" placeholder="—" value="${val}"
+                      onchange="updKR('${okr.id}','${kr.id}',this.value)" aria-label="Valor de ${kr.name}">
+                    <span class="val-unit">${kr.unit}</span>
+                  </div>
+                  <div style="font-size:11px; font-weight:600; margin-top:4px;" class="${scCls(pct)}">${pct}% da meta</div>
+                </div>
+            </div>
+
+            <div style="background:#FAFBFB; border-radius:var(--radius-sm); padding:15px; border:1px solid var(--border-color);">
+                <div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;"><i class="ti ti-messages" style="margin-right:4px;"></i>Comentários / Check-in semanal</div>
+                ${cmts.map(c=>{const u=getUser(c.userId);return `<div class="comment-block">
+                  <div class="comment-author"><div class="avatar ${u?u.color:'av-blue'}" style="width:20px;height:20px;font-size:9px;">${u?initials(u.name):'?'}</div>${u?u.name:'?'} <span class="comment-time">· ${c.ts}</span></div>
+                  <div class="comment-text">${c.text}</div>
+                </div>`;}).join('')}
+                <div style="display:flex; gap:10px; margin-top:12px; align-items:flex-start;">
+                  <textarea id="cmt-${okr.id}-${kr.id}" placeholder="O que aconteceu nesta semana? Desafios, vitórias..." rows="1" style="font-size:13px Haus;"></textarea>
+                  <button class="btn-primary" style="padding:10px;" onclick="addComment('${okr.id}','${kr.id}')"><i class="ti ti-send"></i></button>
+                </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function updKR(okrId,krId,val){
+  const okr=state.okrs.find(o=>o.id===okrId);if(!okr)return;
+  const kr=okr.krs.find(k=>k.id===krId);if(!kr)return;
+  const num=parseFloat(val);
+  if(!isNaN(num)){kr.weekly[state.currentWeek]=num;save();notify('Valor salvo!');}
+}
+
+function addComment(okrId,krId){
+  const cu=currentUser();if(!cu){notify('Faça login novamente',true);return;}
+  const ta=document.getElementById(`cmt-${okrId}-${krId}`);
+  const text=ta?ta.value.trim():'';
+  if(!text){notify('Escreva algo antes de enviar',true);return;}
+  const okr=state.okrs.find(o=>o.id===okrId);if(!okr)return;
+  const kr=okr.krs.find(k=>k.id===krId);if(!kr)return;
+  if(!kr.comments[state.currentWeek])kr.comments[state.currentWeek]=[];
+  const now=new Date();
+  const ts=now.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'}) + ' ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  kr.comments[state.currentWeek].push({userId:cu.id,text,ts});
+  save();notify('Comentário adicionado');renderUpdate();
+}
+
+function renderManage(){
+  const el=document.getElementById('section-manage');
+  const okrs=getOKRs();
+  let html=`<div class="form-section">
+    <div class="form-title"><i class="ti ti-circle-plus" style="color:var(--color-high);"></i> Novo Objetivo (Q)</div>
+    <div class="form-row full"><label>Definição do Objetivo</label><input id="obj-text" type="text" placeholder="Ex: Dominar o mercado de SP no segmento de logística"></div>
+    <div class="form-row">
+      <div><label>Time / Área Responsável</label><input id="obj-owner" type="text" placeholder="Ex: Growth"></div>
+      <div><label>Trimestre (Q)</label><select id="obj-q">${state.quarters.map(q=>`<option value="${q}"${q===state.activeQuarter?' selected':''}>${q}</option>`).join('')}</select></div>
+    </div>
+    <button class="btn-primary" onclick="addObj()"><i class="ti ti-check"></i> Criar Objetivo</button>
+  </div>`;
+  if(!okrs.length){html+=`<div class="empty-state" style="padding:2rem;">Nenhum OKR para gerenciar em ${state.activeQuarter}. Comece criando um acima.</div>`;el.innerHTML=html;return;}
+  okrs.forEach(okr=>{
+    html+=`<div class="okr-card">
+      <div class="okr-header">
+        <div style="flex:1;min-width:0;"><div class="okr-objective">${okr.objective}</div><div class="okr-meta">${okr.owner} · ${okr.quarter}</div></div>
+        <button class="btn-danger" onclick="delOKR('${okr.id}')"><i class="ti ti-trash"></i> Excluir</button>
+      </div>
+      <div style="padding:20px 24px;">
+        <div style="font-size:12px;color:var(--text-secondary);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">Key Results Cadastrados</div>
+        ${okr.krs.map(kr=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-color);">
+          <i class="ti ti-key" style="color:var(--brand-primary);"></i>
+          <div style="flex:1;font-size:14px;font-weight:500;color:var(--text-main);">${kr.name}</div>
+          <div style="font-size:13px;color:var(--text-secondary); background:#F1F3F5; padding:4px 8px; border-radius:4px;">Meta: ${kr.target} ${kr.unit}</div>
+          <button class="btn-sm" style="color:var(--color-low); border-color:var(--bg-low);" onclick="delKR('${okr.id}','${kr.id}')"><i class="ti ti-x"></i></button>
+        </div>`).join('')}
+        
+        <div style="background:#FAFBFB; border-radius:var(--radius-md); padding:1.25rem; border:1px solid var(--border-color); margin-top:20px;">
+            <div style="font-size:12px;color:var(--text-main);font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">Adicionar Novo Key Result</div>
+            <div class="form-row">
+              <div style="grid-column: span 2;"><label>Nome do KR (Entregável e Mensurável)</label><input id="krn-${okr.id}" type="text" placeholder="Ex: Alcançar R$ 500k de MRR"></div>
+              <div><label>Meta Numérica</label><input id="krt-${okr.id}" type="number" placeholder="500"></div>
+              <div><label>Unidade de Medida</label><input id="kru-${okr.id}" type="text" placeholder="%, R$k, un..."></div>
+            </div>
+            <button class="btn-ghost" style="width:100%; justify-content:center;" onclick="addKR('${okr.id}')"><i class="ti ti-plus"></i> Incluir KR ao Objetivo</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function addObj(){
+  const text=document.getElementById('obj-text').value.trim();
+  const owner=document.getElementById('obj-owner').value.trim();
+  const q=document.getElementById('obj-q').value;
+  if(!text){notify('Descreva o objetivo',true);return;}
+  state.okrs.push({id:'okr_'+Date.now(),quarter:q,objective:text,owner:owner||'—',krs:[]});
+  save();state.activeQuarter=q;renderQuarterSelector();notify('Objetivo criado com sucesso!');renderSection();
+}
+function delOKR(id){ if(confirm('Tem certeza que deseja excluir este Objetivo e todos os seus KRs?')) {state.okrs=state.okrs.filter(o=>o.id!==id);save();notify('Objetivo removido');renderSection();}}
+function addKR(okrId){
+  const name=document.getElementById('krn-'+okrId).value.trim();
+  const target=parseFloat(document.getElementById('krt-'+okrId).value);
+  const unit=document.getElementById('kru-'+okrId).value.trim()||'un';
+  if(!name||isNaN(target)){notify('Preencha nome e meta corretamente',true);return;}
+  const okr=state.okrs.find(o=>o.id===okrId);if(!okr)return;
+  okr.krs.push({id:'kr_'+Date.now(),name,target,unit,weekly:{},comments:{}});
+  save();notify('Key Result adicionado!');renderSection();
+}
+function delKR(okrId,krId){
+  const okr=state.okrs.find(o=>o.id===okrId);if(!okr)return;
+  okr.krs=okr.krs.filter(k=>k.id!==krId);save();notify('KR removido');renderSection();
+}
+
+function renderUsers(){
+  const el=document.getElementById('section-users');
+  const cu=currentUser();
+  let html=`<div class="form-section">
+    <div class="form-title"><i class="ti ti-users" style="color:var(--brand-primary);"></i> Membros do Time</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      ${state.users.map(u=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 15px; background:#FAFBFB; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+        <div class="avatar ${u.color}">${initials(u.name)}</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:600;color:var(--text-main);">${u.name} ${u.id===cu?.id?'<span class="badge bg-blue" style="margin-left:5px; font-size:9px; padding: 2px 6px;">Você</span>':''}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${u.role}</div>
+        </div>
+        ${u.id!==cu?.id?`<button class="btn-danger" style="padding:6px;" onclick="delUser('${u.id}')"><i class="ti ti-trash-x"></i></button>`:''}
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="form-section">
+    <div class="form-title"><i class="ti ti-user-plus" style="color:var(--color-high);"></i> Convidar novo membro</div>
+    <div class="form-row">
+      <div><label>Nome Completo</label><input id="nu-name" type="text" placeholder="Ex: João Souza"></div>
+      <div><label>Área / Função</label><input id="nu-role" type="text" placeholder="Ex: Engenharia"></div>
+    </div>
+    <button class="btn-primary" onclick="addUser()"><i class="ti ti-plus"></i> Adicionar Usuário</button>
+  </div>`;
+  el.innerHTML=html;
+}
+function addUser(){
+  const name=document.getElementById('nu-name').value.trim();
+  const role=document.getElementById('nu-role').value.trim();
+  if(!name){notify('Informe pelo menos o nome',true);return;}
+  const color=AV_COLORS[state.users.length%AV_COLORS.length];
+  state.users.push({id:'u_'+Date.now(),name,role:role||'—',color});
+  save();notify('Usuário criado!');renderSection();
+}
+function delUser(id){
+  state.users=state.users.filter(u=>u.id!==id);save();notify('Usuário removido');renderSection();
+}
+
+// Inicialização Assíncrona via Nuvem
+async function initApp() {
+  state = await loadData();
+  
+  // Esconde a tela de carregamento assim que os dados chegarem da nuvem
+  document.getElementById('loading-screen').style.display = 'none';
+  
+  if(state.currentUserId && state.users.find(u=>u.id===state.currentUserId)){
+    login(state.currentUserId);
+  }else{
+    document.getElementById('login-wrap').style.display = 'flex';
+    renderLoginUsers();
+  }
+}
+
+initApp();
+</script>
+</body>
+</html>
